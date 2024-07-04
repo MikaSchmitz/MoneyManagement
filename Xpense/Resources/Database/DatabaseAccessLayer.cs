@@ -2,59 +2,37 @@
 
 namespace Xpense.Resources.Database
 {
-    internal abstract class DatabaseAccessLayer<TEntity> where TEntity : IdentityModel, new()
+    public abstract class DatabaseAccessLayer<TEntity> where TEntity : new()
     {
-        private SQLiteAsyncConnection? _database;
+        protected SQLiteAsyncConnection Database;
 
-        protected DatabaseAccessLayer()
+        public DatabaseAccessLayer()
         {
-            Init().Wait();
+            Init().Wait(); // Ensure the database is initialized synchronously
         }
 
         private async Task Init()
         {
-            if (_database != null)
+            if (Database != null)
                 return;
 
-            _database = new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
-            await _database.CreateTableAsync<TEntity>();
-        }
-
-        protected SQLiteAsyncConnection Database
-        {
-            get
-            {
-                if (_database == null)
-                    throw new InvalidOperationException("Database not initialized");
-                return _database;
-            }
-        }
-
-        public Task<List<TEntity>> GetAllAsync()
-        {
-            return Database.Table<TEntity>().ToListAsync();
-        }
-
-        public Task<TEntity> GetByIdAsync(int id)
-        {
-            return Database.FindAsync<TEntity>(id);
+            Database = new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
+            await Database.CreateTableAsync<TEntity>();
         }
 
         public Task<int> SaveAsync(TEntity entity)
         {
-            if (entity.Id != Guid.Empty)
-            {
-                return Database.UpdateAsync(entity);
-            }
-            else
-            {
-                return Database.InsertAsync(entity);
-            }
+            return Database.InsertOrReplaceAsync(entity);
         }
 
         public Task<int> DeleteAsync(TEntity entity)
         {
             return Database.DeleteAsync(entity);
+        }
+
+        public Task<List<TEntity>> GetAllAsync()
+        {
+            return Database.Table<TEntity>().ToListAsync();
         }
     }
 }

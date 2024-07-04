@@ -2,7 +2,7 @@
 {
     internal class DatabaseConstants
     {
-        internal const string DatabaseFilename = "XpenseSQLiteDev1.db3";
+        internal const string DatabaseFilename = "XpenseSQLite.db3";
 
         internal const SQLite.SQLiteOpenFlags Flags =
             // open the database in read/write mode

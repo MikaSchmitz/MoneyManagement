@@ -1,6 +1,14 @@
-﻿namespace Xpense.ViewModels
+﻿using CommunityToolkit.Mvvm.Input;
+using Xpense.Pages.RecurringBills;
+
+namespace Xpense.ViewModels
 {
-    public class MainViewModel : BaseViewModel
+    public partial class MainViewModel : BaseViewModel
     {
+        [RelayCommand]
+        async Task GoToAddRecurringBillPage()
+        {
+            await Shell.Current.GoToAsync(nameof(AddRecurringBillPage));
+        }
     }
 }

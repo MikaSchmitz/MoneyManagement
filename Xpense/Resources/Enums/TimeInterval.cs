@@ -1,6 +1,6 @@
 ﻿namespace Xpense.Resources.Enums
 {
-    internal enum TimeInterval
+    public enum TimeInterval
     {
         Daily,
         Weekly,

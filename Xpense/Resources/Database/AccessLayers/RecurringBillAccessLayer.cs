@@ -2,7 +2,7 @@
 
 namespace Xpense.Resources.Database.AccessLayers
 {
-    internal class RecurringBillAccessLayer : DatabaseAccessLayer<RecurringBill>
+    public class RecurringBillAccessLayer : DatabaseAccessLayer<RecurringBill>
     {
         public RecurringBillAccessLayer() : base()
         {

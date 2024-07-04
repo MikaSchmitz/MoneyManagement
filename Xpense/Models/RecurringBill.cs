@@ -3,7 +3,7 @@ using Xpense.Resources.Enums;
 
 namespace Xpense.Models
 {
-    internal class RecurringBill : IdentityModel
+    public class RecurringBill : IdentityModel
     {
         public string Name { get; set; }
         public TimeInterval RecurrenceInterval { get; set; }
