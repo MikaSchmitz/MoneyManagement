@@ -1,10 +1,12 @@
-﻿namespace Xpense
+﻿using Xpense.ViewModels;
+
+namespace Xpense.Pages
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : BaseContentPage
     {
         int count = 0;
 
-        public MainPage()
+        public MainPage(MainViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
         }

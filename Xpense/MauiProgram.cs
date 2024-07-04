@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Xpense.Pages;
+using Xpense.ViewModels;
 using Xpense.Resources.Database;
 
 namespace Xpense
@@ -15,6 +17,9 @@ namespace Xpense
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+            builder.Services.AddSingleton<MainPage>();
+            builder.Services.AddSingleton<MainViewModel>();
 
             builder.Services.AddDatabaseAccessLayers();
 
