@@ -1,4 +1,4 @@
-﻿namespace Xpense.Resources.Constants
+﻿namespace Xpense.Resources.Database
 {
     internal class DatabaseConstants
     {

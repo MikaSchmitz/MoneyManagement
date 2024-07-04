@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Xpense.Resources.Database;
 
 namespace Xpense
 {
@@ -15,8 +16,10 @@ namespace Xpense
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            builder.Services.AddDatabaseAccessLayers();
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
