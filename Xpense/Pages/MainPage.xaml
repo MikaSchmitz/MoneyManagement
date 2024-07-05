@@ -8,27 +8,69 @@
              x:DataType="viewmodels:MainViewModel"
              Title="Expenses">
 
-    <Grid RowDefinitions="*, 0.2*"
-          ColumnDefinitions="0.2*, *">
+    <ScrollView>
+        <Grid RowDefinitions="Auto, *, 0.2*"
+              ColumnDefinitions="0.2*, *">
 
-        <!-- Main content goes here -->
-        <StackLayout Grid.Row="0" Grid.ColumnSpan="2">
-            <Label Text="Welcome to .NET MAUI!"
-                   VerticalOptions="CenterAndExpand" 
-                   HorizontalOptions="CenterAndExpand" />
-            <!-- Add more main content here -->
-        </StackLayout>
+            <StackLayout Grid.Row="0" Grid.ColumnSpan="2">
+                <Frame Padding="0"
+                       Margin="0">
+                    <SearchBar SearchCommand="{Binding FilterRecurringBillsCommand}"
+                               Text="{Binding SearchText}"
+                               Placeholder="Search for an expense..."
+                               TextChanged="SearchBar_TextChanged"/>
+                </Frame>
+            </StackLayout>
+        
+            <!-- Main content goes here -->
+            <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
+                <CollectionView ItemsSource="{Binding FilteredRecurringBills}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="{x:Type models:RecurringBill}">
+                        
+                            <Frame Margin="0,0,0,10">
+                                <Grid ColumnDefinitions="*, Auto"
+                                      RowDefinitions="Auto, Auto, Auto">
 
-        <!-- Bottom row with button and text -->
-        <Button x:Name="SmallButton" 
-                Text="Click Me" 
-                Grid.Row="1" 
-                Grid.Column="0" 
-                VerticalOptions="Center" 
-                HorizontalOptions="Center" 
-                Command="{Binding GoToAddRecurringBillPageCommand}"/>
+                                    <!-- Expense -->
+                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="0" Style="{StaticResource H4}" />
 
-        <Label Text="Some text here" Grid.Row="1" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" />
-    </Grid>
+                                    <!-- Due date -->
+                                    <Label Text="{Binding NextBillingDate, StringFormat='Next bill on {0:dddd, MMMM d yyyy}'}" Grid.Row="1" Grid.Column="0" />
+
+                                    <!-- Due in days -->
+                                    <Label Text="{Binding DaysUntillBilled, StringFormat='In {0} days'}" Grid.Row="2" Grid.Column="0" />
+
+                                    <!-- Cost-->
+                                    <Label Text="{Binding AmountToBeBilled, StringFormat='€{0}'}" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Style="{StaticResource H5}" />
+                                </Grid>
+                            </Frame>
+                        
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+
+            <!-- Bottom row with button and text -->
+            <HorizontalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
+                <Button x:Name="SmallButton" 
+                        Text="Click Me" 
+                        Grid.Row="2" 
+                        Grid.Column="0" 
+                        VerticalOptions="Center" 
+                        HorizontalOptions="Start" 
+                        Margin="0,0,10,0"
+                        Command="{Binding GoToAddRecurringBillPageCommand}"/>
+
+                <Label Text="{Binding DueAmountThisMonth, StringFormat='€{0} due this month.'}" 
+                       Grid.Row="2" 
+                       Grid.Column="1" 
+                       VerticalOptions="Center" 
+                       HorizontalOptions="End" />
+
+            </HorizontalStackLayout>
+        </Grid>
+    </ScrollView>
 
 </pages:BaseContentPage>

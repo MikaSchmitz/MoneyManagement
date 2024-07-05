@@ -6,11 +6,74 @@
              x:Class="Xpense.Pages.RecurringBills.AddRecurringBillPage"
              x:DataType="viewmodels:AddRecurringBillViewModel"
              Title="Add new bill">
-    <VerticalStackLayout>
-        <Label 
-            Text="What is the name of the new expense"
-            VerticalOptions="StartAndExpand" 
-            HorizontalOptions="StartAndExpand" />
-        <Entry Text="{Binding RecurringBill.Name}" />
-    </VerticalStackLayout>
+    
+    <ScrollView>
+        <VerticalStackLayout>
+            
+        
+            <!-- Name of the expense -->
+            <StackLayout>
+                <Label Style="{StaticResource H6}" 
+                       Text="What is the name of the new expense?" />
+                <Frame Style="{StaticResource EntryBox}">
+                    <Entry Text="{Binding RecurringBill.Name}"
+                           Placeholder="Netflix subscription..."
+                           Keyboard="Chat"/>
+                </Frame>
+            </StackLayout>
+
+            <!-- First billing date -->
+            <StackLayout>
+                <Label Style="{StaticResource H6}" 
+                       Text="When will the first payment be due?" />
+                <Frame Style="{StaticResource EntryBox}">
+                    <DatePicker Date="{Binding Cost.StartDate}"
+                                Format="dddd, dd/MM/yyyy"/>
+                </Frame>
+            </StackLayout>
+
+            <!-- Frequency -->
+            <StackLayout>
+                <Label Style="{StaticResource H6}" 
+                       Text="Select the billing frequency:" />
+                <Grid ColumnDefinitions=".3*, *">
+
+                    <!-- Billing Interval Input -->
+                    <VerticalStackLayout Grid.Column="0">
+                        <Frame Style="{StaticResource EntryBox}"
+                               Margin="0">
+                            <Entry Text="{Binding RecurringBill.RecurrenceIntervalMultiplier}"
+                                   Placeholder="1..."
+                                   Keyboard="Numeric"/>
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <!-- Billing Type Selection -->
+                    <VerticalStackLayout Grid.Column="1">
+                        <Frame Style="{StaticResource EntryBox}">
+                            <Picker ItemsSource="{Binding AvailableTimeIntervals}"
+                                    Title="Choose Frequency"
+                                    SelectedItem="{Binding RecurringBill.RecurrenceInterval}"/>
+                        </Frame>
+                    </VerticalStackLayout>
+                </Grid>
+                
+            </StackLayout>
+
+            <!-- Cost -->
+            <StackLayout>
+                <Label Style="{StaticResource H6}" 
+                       Text="What amount will be billed each time?" />
+                <Frame Style="{StaticResource EntryBox}">
+                    <Entry Text="{Binding Cost.Amount}"
+                   Placeholder="€9,99..."
+                   Keyboard="Numeric"/>
+                </Frame>
+            </StackLayout>
+
+            <Button Text="Save"
+                    Command="{Binding CreateNewRecurringBillCommand}"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </pages:BaseContentPage>

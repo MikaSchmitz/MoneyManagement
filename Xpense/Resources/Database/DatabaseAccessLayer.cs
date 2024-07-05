@@ -6,12 +6,7 @@ namespace Xpense.Resources.Database
     {
         protected SQLiteAsyncConnection Database;
 
-        public DatabaseAccessLayer()
-        {
-            Init().Wait(); // Ensure the database is initialized synchronously
-        }
-
-        private async Task Init()
+        protected async Task Init()
         {
             if (Database != null)
                 return;
@@ -20,19 +15,22 @@ namespace Xpense.Resources.Database
             await Database.CreateTableAsync<TEntity>();
         }
 
-        public Task<int> SaveAsync(TEntity entity)
+        public async Task<int> SaveAsync(TEntity entity)
         {
-            return Database.InsertOrReplaceAsync(entity);
+            await Init();
+            return await Database.InsertOrReplaceAsync(entity);
         }
 
-        public Task<int> DeleteAsync(TEntity entity)
+        public async Task<int> DeleteAsync(TEntity entity)
         {
-            return Database.DeleteAsync(entity);
+            await Init();
+            return await Database.DeleteAsync(entity);
         }
 
-        public Task<List<TEntity>> GetAllAsync()
+        public async Task<List<TEntity>> GetAllAsync()
         {
-            return Database.Table<TEntity>().ToListAsync();
+            await Init();
+            return await Database.Table<TEntity>().ToListAsync();
         }
     }
 }

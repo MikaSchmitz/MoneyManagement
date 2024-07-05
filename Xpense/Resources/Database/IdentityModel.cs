@@ -4,5 +4,11 @@
     {
         public Guid Id { get; set; }
         public DateTime Created { get; set; }
+
+        public IdentityModel()
+        {
+            Id = Guid.NewGuid();
+            Created = DateTime.UtcNow;
+        }
     }
 }

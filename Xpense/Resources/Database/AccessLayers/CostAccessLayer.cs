@@ -9,9 +9,10 @@ namespace Xpense.Resources.Database.AccessLayers
             
         }
 
-        public Task<List<Cost>> GetByRecurringBillingIdAsync(Guid recurringBillingId)
+        public async Task<List<Cost>> GetByRecurringBillingIdAsync(Guid recurringBillingId)
         {
-            return Database.Table<Cost>().Where(c => c.RecurringBillingId == recurringBillingId).ToListAsync();
+            await Init();
+            return await Database.Table<Cost>().Where(c => c.RecurringBillingId == recurringBillingId).ToListAsync();
         }
     }
 }
