@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Xpense.Models;
 using Xpense.Pages.RecurringBills;
 using Xpense.Resources.Database.AccessLayers;
+using Xpense.Resources.Extensions;
 
 namespace Xpense.ViewModels
 {
@@ -46,25 +47,7 @@ namespace Xpense.ViewModels
         [RelayCommand]
         async Task LoadAllRecurringBills()
         {
-            AllRecurringBills.Clear();
-
-            var bills = await _recurringBillAccessLayer.GetAllAsync();
-            foreach (var bill in bills) 
-            {
-                var costs = await _costAccessLayer.GetByRecurringBillingIdAsync(bill.Id);
-                bill.Costs = new ObservableCollection<Cost>(costs);
-                AllRecurringBills.Add(bill);
-                Debug.WriteLine($"Expense `{bill.Name}` loaded with `{bill.Costs.Count}` costs.");
-            }
-            Debug.WriteLine($"Finished loading recurring bills, `{AllRecurringBills.Count}` found.");
-
-            AllRecurringBills.OrderBy(x => x.DaysUntillBilled);
-            DueAmountThisYear = AllRecurringBills.Where(x => x.DaysUntillBilled <= 365).Sum(x => x.AmountToBeBilled);
-            DueAmountThisMonth = AllRecurringBills.Where(x => x.DaysUntillBilled <= 31).Sum(x => x.AmountToBeBilled);
-            DueAmountThisWeek = AllRecurringBills.Where(x => x.DaysUntillBilled <= 7).Sum(x => x.AmountToBeBilled);
-            DueAmountThisDay = AllRecurringBills.Where(x => x.DaysUntillBilled <= 31).Sum(x => x.AmountToBeBilled);
-
-            FilteredRecurringBills = AllRecurringBills;
+            await RefreshRecurringBillsAsync();
         }
 
         [RelayCommand]
@@ -84,9 +67,49 @@ namespace Xpense.ViewModels
         }
 
         [RelayCommand]
+        async Task Delete(RecurringBill recurringBill)
+        {
+            foreach(var cost in recurringBill.Costs)
+            {
+                await _costAccessLayer.DeleteAsync(cost);
+            }
+            await _recurringBillAccessLayer.DeleteAsync(recurringBill);
+            FilteredRecurringBills.Remove(recurringBill);
+            CalculateDueAmounts();
+        }
+
+        [RelayCommand]
         async Task GoToAddRecurringBillPage()
         {
             await Shell.Current.GoToAsync(nameof(AddRecurringBillPage));
+        }
+
+        private async Task RefreshRecurringBillsAsync()
+        {
+            AllRecurringBills.Clear();
+
+            var bills = await _recurringBillAccessLayer.GetAllAsync();
+            foreach (var bill in bills)
+            {
+                var costs = await _costAccessLayer.GetByRecurringBillingIdAsync(bill.Id);
+                bill.Costs = new ObservableCollection<Cost>(costs);
+                AllRecurringBills.Add(bill);
+                Debug.WriteLine($"Expense `{bill.Name}` loaded with `{bill.Costs.Count}` costs.");
+            }
+            Debug.WriteLine($"Finished loading recurring bills, `{AllRecurringBills.Count}` found.");
+
+            FilteredRecurringBills = new ObservableCollection<RecurringBill>(AllRecurringBills.Where(x => x.Active).OrderBy(x => x.DaysUntillBilled));
+
+            CalculateDueAmounts();
+        }
+
+        private void CalculateDueAmounts()
+        {
+            var dateTimeNow = DateTime.UtcNow;
+            DueAmountThisYear = FilteredRecurringBills.Where(x => x.DaysUntillBilled <= dateTimeNow.DaysRemainingInYear()).Sum(x => x.AmountToBeBilled);
+            DueAmountThisMonth = FilteredRecurringBills.Where(x => x.DaysUntillBilled <= dateTimeNow.DaysRemainingInMonth()).Sum(x => x.AmountToBeBilled);
+            DueAmountThisWeek = FilteredRecurringBills.Where(x => x.DaysUntillBilled <= dateTimeNow.DaysRemainingInWeek()).Sum(x => x.AmountToBeBilled);
+            DueAmountThisDay = FilteredRecurringBills.Where(x => x.DaysUntillBilled == 0).Sum(x => x.AmountToBeBilled);
         }
     }
 }

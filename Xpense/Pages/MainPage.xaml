@@ -1,76 +1,88 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <pages:BaseContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:Xpense.ViewModels"
-             xmlns:pages="clr-namespace:Xpense.Pages"
-             xmlns:models="clr-namespace:Xpense.Models"
-             x:Class="Xpense.Pages.MainPage"
-             x:DataType="viewmodels:MainViewModel"
-             Title="Expenses">
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:viewmodels="clr-namespace:Xpense.ViewModels"
+                       xmlns:pages="clr-namespace:Xpense.Pages"
+                       xmlns:models="clr-namespace:Xpense.Models"
+                       x:Class="Xpense.Pages.MainPage"
+                       x:DataType="viewmodels:MainViewModel"
+                       Title="Expenses">
 
-    <ScrollView>
-        <Grid RowDefinitions="Auto, *, 0.2*"
-              ColumnDefinitions="0.2*, *">
+    <Grid RowDefinitions="Auto, *, Auto"
+          ColumnDefinitions="0.2*, *">
 
-            <StackLayout Grid.Row="0" Grid.ColumnSpan="2">
-                <Frame Padding="0"
-                       Margin="0">
-                    <SearchBar SearchCommand="{Binding FilterRecurringBillsCommand}"
-                               Text="{Binding SearchText}"
-                               Placeholder="Search for an expense..."
-                               TextChanged="SearchBar_TextChanged"/>
-                </Frame>
-            </StackLayout>
-        
-            <!-- Main content goes here -->
-            <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
-                <CollectionView ItemsSource="{Binding FilteredRecurringBills}"
-                                SelectionMode="None">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="{x:Type models:RecurringBill}">
-                        
-                            <Frame Margin="0,0,0,10">
-                                <Grid ColumnDefinitions="*, Auto"
-                                      RowDefinitions="Auto, Auto, Auto">
+        <!-- Search bar -->
+        <StackLayout Grid.Row="0" Grid.ColumnSpan="2">
+            <Frame Padding="0"
+                   Margin="0">
+                <SearchBar SearchCommand="{Binding FilterRecurringBillsCommand}"
+                           Text="{Binding SearchText}"
+                           Placeholder="Search for an expense..."
+                           TextChanged="SearchBar_TextChanged"/>
+            </Frame>
+        </StackLayout>
 
-                                    <!-- Expense -->
-                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="0" Style="{StaticResource H4}" />
+        <!-- Billing overview -->
+        <CollectionView Grid.Row="1" Grid.ColumnSpan="2"
+                ItemsSource="{Binding FilteredRecurringBills}"
+                SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type models:RecurringBill}">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Delete"
+                                           BackgroundColor="DarkRed"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=DeleteCommand}"
+                                           CommandParameter="{Binding .}">
+                                    <SwipeItem.IconImageSource>
+                                        <FontImageSource Glyph="&#xf187;" />
+                                    </SwipeItem.IconImageSource>
+                                </SwipeItem>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
 
-                                    <!-- Due date -->
-                                    <Label Text="{Binding NextBillingDate, StringFormat='Next bill on {0:dddd, MMMM d yyyy}'}" Grid.Row="1" Grid.Column="0" />
+                        <Frame Margin="0,0,0,10">
+                            <Grid ColumnDefinitions="*, Auto"
+                                  RowDefinitions="Auto, Auto, Auto">
 
-                                    <!-- Due in days -->
-                                    <Label Text="{Binding DaysUntillBilled, StringFormat='In {0} days'}" Grid.Row="2" Grid.Column="0" />
+                                <!-- Expense -->
+                                <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="0" Style="{StaticResource H4}" />
 
-                                    <!-- Cost-->
-                                    <Label Text="{Binding AmountToBeBilled, StringFormat='€{0}'}" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Style="{StaticResource H5}" />
-                                </Grid>
-                            </Frame>
-                        
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </StackLayout>
+                                <!-- Due date -->
+                                <Label Text="{Binding NextBillingDate, StringFormat='{0:dddd, d MMMM yyyy}'}" Grid.Row="1" Grid.Column="0" />
 
-            <!-- Bottom row with button and text -->
-            <HorizontalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
-                <Button x:Name="SmallButton" 
-                        Text="Click Me" 
-                        Grid.Row="2" 
-                        Grid.Column="0" 
-                        VerticalOptions="Center" 
-                        HorizontalOptions="Start" 
-                        Margin="0,0,10,0"
-                        Command="{Binding GoToAddRecurringBillPageCommand}"/>
+                                <!-- Due in days -->
+                                <Label Text="{Binding DaysUntillBilled, StringFormat='In {0} days'}" Grid.Row="2" Grid.Column="0" />
 
-                <Label Text="{Binding DueAmountThisMonth, StringFormat='€{0} due this month.'}" 
-                       Grid.Row="2" 
-                       Grid.Column="1" 
-                       VerticalOptions="Center" 
-                       HorizontalOptions="End" />
+                                <!-- Cost-->
+                                <Label Text="{Binding AmountToBeBilledToString}" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Style="{StaticResource H5}" />
+                            </Grid>
+                        </Frame>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-            </HorizontalStackLayout>
-        </Grid>
-    </ScrollView>
+        <!-- Summary -->
+        <Button x:Name="CreateRecurringBillButton" 
+                Text="+"
+                Grid.Row="2" 
+                Grid.Column="0" 
+                VerticalOptions="Center" 
+                HorizontalOptions="Start" 
+                Margin="0,10,10,0"
+                Padding="10"
+                CornerRadius="100"
+                FontSize="18"
+                FontAttributes="Bold"
+                Command="{Binding GoToAddRecurringBillPageCommand}"/>
+
+        <Label Text="{Binding DueAmountThisMonth, StringFormat='€{0} due before the end of this month.'}" 
+                Grid.Row="2" 
+                Grid.Column="1" 
+                VerticalOptions="Center" 
+                HorizontalOptions="End" />
+    </Grid>
 
 </pages:BaseContentPage>

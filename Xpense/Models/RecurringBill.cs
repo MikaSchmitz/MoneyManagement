@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using Xpense.Resources.Database;
 using Xpense.Resources.Enums;
+using Xpense.Resources.Extensions;
 
 namespace Xpense.Models
 {
@@ -11,6 +12,7 @@ namespace Xpense.Models
         public TimeInterval RecurrenceInterval { get; set; }
         public int RecurrenceIntervalMultiplier { get; set; }
         public string? Note { get; set; }
+        public bool Active { get; set; }
 
         // relational
         [Ignore]
@@ -20,12 +22,14 @@ namespace Xpense.Models
         public DateTime NextBillingDate => CalculateNextBillingDate();
         public int DaysUntillBilled => CalculateDaysUntillBilled();
         public decimal AmountToBeBilled => GetMostRelevantPriceIndication().Amount;
+        public string AmountToBeBilledToString => AmountToBeBilled.ToEuroString();
 
         public RecurringBill() : base()
         {
             Name = string.Empty;
             RecurrenceInterval = TimeInterval.Monthly;
             RecurrenceIntervalMultiplier = 1;
+            Active = true;
             Costs = new ObservableCollection<Cost>();
         }
 
