@@ -6,6 +6,7 @@ using Xpense.Models;
 using Xpense.Pages.RecurringBills;
 using Xpense.Resources.Database.AccessLayers;
 using Xpense.Resources.Extensions;
+using Xpense.ViewModels.DTOs;
 
 namespace Xpense.ViewModels
 {
@@ -15,10 +16,13 @@ namespace Xpense.ViewModels
         private readonly CostAccessLayer _costAccessLayer;
 
         [ObservableProperty]
-        ObservableCollection<RecurringBill> allRecurringBills;
+        ObservableCollection<Expense> allExpenses;
 
         [ObservableProperty]
-        ObservableCollection<RecurringBill> filteredRecurringBills;
+        ObservableCollection<Expense> filteredExpenses;
+
+        [ObservableProperty]
+        Expense? selectedExpense;
 
         [ObservableProperty]
         string searchText;
@@ -39,8 +43,8 @@ namespace Xpense.ViewModels
         {
             _recurringBillAccessLayer = new RecurringBillAccessLayer();
             _costAccessLayer = new CostAccessLayer();
-            AllRecurringBills = new ObservableCollection<RecurringBill>();
-            FilteredRecurringBills = new ObservableCollection<RecurringBill>();
+            AllExpenses = new ObservableCollection<Expense>();
+            FilteredExpenses = new ObservableCollection<Expense>();
             SearchText = string.Empty;
         }
 
@@ -55,26 +59,26 @@ namespace Xpense.ViewModels
         {
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                FilteredRecurringBills = AllRecurringBills;
+                FilteredExpenses = AllExpenses;
             }
             else
             {
-                FilteredRecurringBills = new ObservableCollection<RecurringBill>(
-                    AllRecurringBills.Where(b => b.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                FilteredExpenses = new ObservableCollection<Expense>(
+                    AllExpenses.Where(b => b.Bill.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 );
             }
-            OnPropertyChanged(nameof(FilteredRecurringBills));
+            OnPropertyChanged(nameof(FilteredExpenses));
         }
 
         [RelayCommand]
-        async Task Delete(RecurringBill recurringBill)
+        async Task Delete(Expense dto)
         {
-            foreach(var cost in recurringBill.Costs)
+            foreach(var cost in dto.Costs)
             {
                 await _costAccessLayer.DeleteAsync(cost);
             }
-            await _recurringBillAccessLayer.DeleteAsync(recurringBill);
-            FilteredRecurringBills.Remove(recurringBill);
+            await _recurringBillAccessLayer.DeleteAsync(dto.Bill);
+            FilteredExpenses.Remove(dto);
             CalculateDueAmounts();
         }
 
@@ -84,21 +88,26 @@ namespace Xpense.ViewModels
             await Shell.Current.GoToAsync(nameof(AddRecurringBillPage));
         }
 
+        [RelayCommand]
+        async Task GoToDetailPage(Guid id)
+        {
+            await Shell.Current.GoToAsync($"{nameof(RecurringBillDetailPage)}?RecurringBillId={id}");
+        }
+
         private async Task RefreshRecurringBillsAsync()
         {
-            AllRecurringBills.Clear();
+            AllExpenses.Clear();
 
             var bills = await _recurringBillAccessLayer.GetAllAsync();
             foreach (var bill in bills)
             {
                 var costs = await _costAccessLayer.GetByRecurringBillingIdAsync(bill.Id);
-                bill.Costs = new ObservableCollection<Cost>(costs);
-                AllRecurringBills.Add(bill);
-                Debug.WriteLine($"Expense `{bill.Name}` loaded with `{bill.Costs.Count}` costs.");
+                AllExpenses.Add(new Expense(bill, costs));
+                Debug.WriteLine($"Expense `{bill.Name}` loaded with `{costs.Count}` costs.");
             }
-            Debug.WriteLine($"Finished loading recurring bills, `{AllRecurringBills.Count}` found.");
+            Debug.WriteLine($"Finished loading recurring bills, `{AllExpenses.Count}` found.");
 
-            FilteredRecurringBills = new ObservableCollection<RecurringBill>(AllRecurringBills.Where(x => x.Active).OrderBy(x => x.DaysUntillBilled));
+            FilteredExpenses = new ObservableCollection<Expense>(AllExpenses.Where(x => x.Bill.Active).OrderBy(x => x.DaysUntilBilled));
 
             CalculateDueAmounts();
         }
@@ -106,10 +115,10 @@ namespace Xpense.ViewModels
         private void CalculateDueAmounts()
         {
             var dateTimeNow = DateTime.UtcNow;
-            DueAmountThisYear = FilteredRecurringBills.Where(x => x.DaysUntillBilled <= dateTimeNow.DaysRemainingInYear()).Sum(x => x.AmountToBeBilled);
-            DueAmountThisMonth = FilteredRecurringBills.Where(x => x.DaysUntillBilled <= dateTimeNow.DaysRemainingInMonth()).Sum(x => x.AmountToBeBilled);
-            DueAmountThisWeek = FilteredRecurringBills.Where(x => x.DaysUntillBilled <= dateTimeNow.DaysRemainingInWeek()).Sum(x => x.AmountToBeBilled);
-            DueAmountThisDay = FilteredRecurringBills.Where(x => x.DaysUntillBilled == 0).Sum(x => x.AmountToBeBilled);
+            DueAmountThisYear = FilteredExpenses.Where(x => x.DaysUntilBilled <= dateTimeNow.DaysRemainingInYear()).Sum(x => x.AmountToBeBilled);
+            DueAmountThisMonth = FilteredExpenses.Where(x => x.DaysUntilBilled <= dateTimeNow.DaysRemainingInMonth()).Sum(x => x.AmountToBeBilled);
+            DueAmountThisWeek = FilteredExpenses.Where(x => x.DaysUntilBilled <= dateTimeNow.DaysRemainingInWeek()).Sum(x => x.AmountToBeBilled);
+            DueAmountThisDay = FilteredExpenses.Where(x => x.DaysUntilBilled == 0).Sum(x => x.AmountToBeBilled);
         }
     }
 }

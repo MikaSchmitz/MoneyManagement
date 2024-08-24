@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pages:BaseContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:Xpense.Pages"
+             xmlns:models="clr-namespace:Xpense.Models"
+             xmlns:dtos="clr-namespace:Xpense.ViewModels.DTOs"
+             xmlns:viewmodels="clr-namespace:Xpense.ViewModels.RecurringBills"
+             x:Class="Xpense.Pages.RecurringBills.RecurringBillDetailPage"
+             x:DataType="viewmodels:RecurringBillDetailViewModel"
+             Title="{Binding Expense.Bill.Name}">
+    
+    <VerticalStackLayout>
+
+        <StackLayout>
+            <Label Style="{StaticResource H5}"
+                   Text="Past"/>
+            <BoxView HeightRequest="1" Color="{StaticResource Primary}" HorizontalOptions="FillAndExpand" Margin="0,0,0,10"/>
+
+            <Label Style="{StaticResource H6}" 
+                   Text="{Binding Expense.FirstBillingDate, StringFormat='{0:dd/MM/yyyy} was the first billing.'}"
+                   VerticalOptions="Start" 
+                   HorizontalOptions="StartAndExpand" />
+
+            <Label Style="{StaticResource H6}" 
+                   Text="{Binding Expense.PastBillingOccurrencedCount, StringFormat='{0} times billed so far.'}"
+                   VerticalOptions="Start" 
+                   HorizontalOptions="StartAndExpand" />
+
+            <Label Style="{StaticResource H6}" 
+                   Text="{Binding Expense.TotalBilledAmountToString, StringFormat='{0} has been spent so far.'}"
+                   VerticalOptions="Start" 
+                   HorizontalOptions="StartAndExpand" />
+        </StackLayout>
+
+        <StackLayout>
+            <Label Style="{StaticResource H5}"
+                   Text="Future"/>
+            <BoxView HeightRequest="1" Color="{StaticResource Primary}" HorizontalOptions="FillAndExpand" Margin="0,0,0,10"/>
+
+            <Label Style="{StaticResource H6}" 
+                   Text="{Binding Expense.NextBillingDate, StringFormat='{0:dd/MM/yyyy} is the next billing.'}"
+                   VerticalOptions="Start" 
+                   HorizontalOptions="StartAndExpand" />
+
+            <Label Style="{StaticResource H6}" 
+                   Text="{Binding Expense.DaysUntilBilled, StringFormat='{0} until billing date.'}"
+                   VerticalOptions="Start" 
+                   HorizontalOptions="StartAndExpand" />
+
+            <Label Style="{StaticResource H6}" 
+                   Text="{Binding Expense.AmountToBeBilledToString, StringFormat='{0} will be charged.'}"
+                   VerticalOptions="Start" 
+                   HorizontalOptions="StartAndExpand" />
+        </StackLayout>
+
+        <StackLayout>
+            <Label Style="{StaticResource H5}"
+                   Text="Price changes"/>
+            <BoxView HeightRequest="1" Color="{StaticResource Primary}" HorizontalOptions="FillAndExpand" Margin="0,0,0,10"/>
+
+            <ScrollView>
+                <CollectionView ItemsSource="{Binding Expense.Costs}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="{x:Type models:Cost}">
+                            <Grid ColumnDefinitions="0.3*, 0.2*, 0.4*">
+                                <Label Grid.Column="0" Text="{Binding StartDate, StringFormat='{0:dd/MM/yyyy}'}" />
+                                <Label Grid.Column="1" Text="{Binding AmountToString}" />
+                                <Label Grid.Column="2" Text="{Binding Note}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
+            <Button Text="Update pricing"
+                    Command="{Binding GoToChangeBilledAmountPageCommand}"
+                    CommandParameter="{Binding Expense.Bill.Id}"/>
+        </StackLayout>
+
+
+
+    </VerticalStackLayout>
+    
+</pages:BaseContentPage>

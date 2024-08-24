@@ -2,7 +2,7 @@
 
 namespace Xpense.Resources.Database
 {
-    public abstract class DatabaseAccessLayer<TEntity> where TEntity : new()
+    public abstract class DatabaseAccessLayer<TEntity> where TEntity : IdentityModel, new()
     {
         protected SQLiteAsyncConnection Database;
 
@@ -31,6 +31,12 @@ namespace Xpense.Resources.Database
         {
             await Init();
             return await Database.Table<TEntity>().ToListAsync();
+        }
+
+        public async Task<TEntity?> GetByIdAsync(Guid id)
+        {
+            await Init();
+            return await Database.Table<TEntity>().FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

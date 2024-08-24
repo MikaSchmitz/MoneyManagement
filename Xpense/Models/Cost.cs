@@ -11,6 +11,8 @@ namespace Xpense.Models
         public decimal Amount { get; set; }
         public string? Note { get; set; }
 
+        public string AmountToString => Amount.ToEuroString();
+
         public Cost() : base()
         {
             StartDate = DateTime.UtcNow;

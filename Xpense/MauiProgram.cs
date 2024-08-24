@@ -28,6 +28,12 @@ namespace Xpense
             builder.Services.AddTransient<AddRecurringBillPage>();
             builder.Services.AddTransient<AddRecurringBillViewModel>();
 
+            builder.Services.AddTransient<RecurringBillDetailPage>();
+            builder.Services.AddTransient<RecurringBillDetailViewModel>();
+
+            builder.Services.AddTransient<ChangeRecurringBillAmountPage>();
+            builder.Services.AddTransient<ChangeRecurringBillAmountViewModel>();
+
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

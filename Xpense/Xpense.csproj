@@ -72,10 +72,12 @@
 	  <MauiXaml Update="Pages\RecurringBills\AddRecurringBillPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Pages\Costs\" />
+	  <MauiXaml Update="Pages\RecurringBills\ChangeRecurringBillAmountPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\RecurringBills\RecurringBillDetailPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

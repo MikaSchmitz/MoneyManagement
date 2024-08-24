@@ -225,7 +225,7 @@
     </Style>
 
     <Style TargetType="Label" x:Key="Paragraph">
-
+        <Setter Property="TextType" Value="Html" />
     </Style>
 
     <Style TargetType="ListView">

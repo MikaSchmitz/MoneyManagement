@@ -4,6 +4,7 @@
                        xmlns:viewmodels="clr-namespace:Xpense.ViewModels"
                        xmlns:pages="clr-namespace:Xpense.Pages"
                        xmlns:models="clr-namespace:Xpense.Models"
+                       xmlns:dtos="clr-namespace:Xpense.ViewModels.DTOs"
                        x:Class="Xpense.Pages.MainPage"
                        x:DataType="viewmodels:MainViewModel"
                        Title="Expenses">
@@ -24,17 +25,20 @@
 
         <!-- Billing overview -->
         <CollectionView Grid.Row="1" Grid.ColumnSpan="2"
-                ItemsSource="{Binding FilteredRecurringBills}"
-                SelectionMode="Single">
+                ItemsSource="{Binding FilteredExpenses}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedExpense, Mode=TwoWay}"
+                SelectionChangedCommand="{Binding GoToDetailPageCommand}"
+                SelectionChangedCommandParameter="{Binding SelectedExpense.Bill.Id}">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="{x:Type models:RecurringBill}">
+                <DataTemplate x:DataType="{x:Type dtos:Expense}">
                     <SwipeView>
                         <SwipeView.RightItems>
                             <SwipeItems>
                                 <SwipeItem Text="Delete"
-                                           BackgroundColor="DarkRed"
-                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=DeleteCommand}"
-                                           CommandParameter="{Binding .}">
+                                   BackgroundColor="DarkRed"
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=DeleteCommand}"
+                                   CommandParameter="{Binding .}">
                                     <SwipeItem.IconImageSource>
                                         <FontImageSource Glyph="&#xf187;" />
                                     </SwipeItem.IconImageSource>
@@ -44,16 +48,16 @@
 
                         <Frame Margin="0,0,0,10">
                             <Grid ColumnDefinitions="*, Auto"
-                                  RowDefinitions="Auto, Auto, Auto">
+                          RowDefinitions="Auto, Auto, Auto">
 
                                 <!-- Expense -->
-                                <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="0" Style="{StaticResource H4}" />
+                                <Label Text="{Binding Bill.Name}" Grid.Row="0" Grid.Column="0" Style="{StaticResource H4}" />
 
                                 <!-- Due date -->
                                 <Label Text="{Binding NextBillingDate, StringFormat='{0:dddd, d MMMM yyyy}'}" Grid.Row="1" Grid.Column="0" />
 
                                 <!-- Due in days -->
-                                <Label Text="{Binding DaysUntillBilled, StringFormat='In {0} days'}" Grid.Row="2" Grid.Column="0" />
+                                <Label Text="{Binding DaysUntilBilled, StringFormat='In {0} days'}" Grid.Row="2" Grid.Column="0" />
 
                                 <!-- Cost-->
                                 <Label Text="{Binding AmountToBeBilledToString}" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Style="{StaticResource H5}" />

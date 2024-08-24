@@ -9,6 +9,8 @@ namespace Xpense
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(AddRecurringBillPage), typeof(AddRecurringBillPage));
+            Routing.RegisterRoute(nameof(RecurringBillDetailPage), typeof(RecurringBillDetailPage));
+            Routing.RegisterRoute(nameof(ChangeRecurringBillAmountPage), typeof(ChangeRecurringBillAmountPage));
         }
     }
 }

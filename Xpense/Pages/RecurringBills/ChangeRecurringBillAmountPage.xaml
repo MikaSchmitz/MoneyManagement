@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pages:BaseContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:Xpense.Pages"
+             xmlns:viewmodels="clr-namespace:Xpense.ViewModels.RecurringBills"
+             x:Class="Xpense.Pages.RecurringBills.ChangeRecurringBillAmountPage"
+             x:DataType="viewmodels:ChangeRecurringBillAmountViewModel"
+             Title="Update expense amount">
+
+    <ScrollView>
+        <VerticalStackLayout>
+
+            <!-- new billing date -->
+            <StackLayout>
+                <Label Style="{StaticResource H6}" 
+                       Text="When will the price change start?" />
+                <Frame Style="{StaticResource EntryBox}">
+                    <DatePicker Date="{Binding Cost.StartDate}"
+                                Format="dddd, dd/MM/yyyy"/>
+                </Frame>
+            </StackLayout>
+
+            <!-- new cost -->
+            <StackLayout>
+                <Label Style="{StaticResource H6}" 
+                   Text="What amount will be billed each time?" />
+                <Frame Style="{StaticResource EntryBox}">
+                    <Entry Text="{Binding Cost.Amount}"
+               Placeholder="€9,99..."
+               Keyboard="Numeric"/>
+                </Frame>
+            </StackLayout>
+
+            <!-- Note -->
+            <StackLayout>
+                <Label Style="{StaticResource H6}" 
+                       Text="Note (optional):" />
+                <Frame Style="{StaticResource EntryBox}">
+                    <Entry Text="{Binding Cost.Note}"
+                           Placeholder="Changed subscription type..."
+                           Keyboard="Chat"/>
+                </Frame>
+            </StackLayout>
+
+            <Button Text="Update"
+                    Command="{Binding UpdatePricingCommand}"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</pages:BaseContentPage>
