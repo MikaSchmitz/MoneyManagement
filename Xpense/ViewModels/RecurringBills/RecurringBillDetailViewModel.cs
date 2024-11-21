@@ -55,5 +55,16 @@ namespace Xpense.ViewModels.RecurringBills
         {
             await Shell.Current.GoToAsync($"{nameof(ChangeRecurringBillAmountPage)}?RecurringBillId={id}");
         }
+
+        [RelayCommand]
+        async Task Delete(Expense dto)
+        {
+            foreach (var cost in dto.Costs)
+            {
+                await _costAccessLayer.DeleteAsync(cost);
+            }
+            await _recurringBillAccessLayer.DeleteAsync(dto.Bill);
+            await GoToPreviousPage();
+        }
     }
 }

@@ -55,7 +55,7 @@ namespace Xpense.ViewModels
         }
 
         [RelayCommand]
-        async Task FilterRecurringBills()
+        void FilterRecurringBills()
         {
             if (string.IsNullOrWhiteSpace(SearchText))
             {

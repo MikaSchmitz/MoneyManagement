@@ -25,14 +25,12 @@ namespace Xpense.ViewModels.DTOs
             Costs = new ObservableCollection<Cost>(costs.OrderByDescending(x => x.StartDate));
         }
 
-        /// <summary>
-        /// Gets the most relevant price indication by finding the latest cost that has already been billed at least once.
-        /// </summary>
-        /// <returns>The latest cost that has been billed at least once, or null if none found.</returns>
         private Cost? GetMostRelevantPriceIndication()
         {
-            var costs = Costs.Where(x => x.StartDate.Date <= DateTime.Now.Date);
-            var mostRelevantPrice = costs.OrderByDescending(x => x.StartDate).FirstOrDefault();
+            // Find the most relevant price by considering both future and past costs
+            var mostRelevantPrice = Costs
+                .OrderByDescending(x => x.Created) // Sort by Created in descending order
+                .FirstOrDefault();
 
             if (mostRelevantPrice == null)
             {
