@@ -4,14 +4,28 @@ namespace Xpense.Resources.Database
 {
     public abstract class DatabaseAccessLayer<TEntity> where TEntity : IdentityModel, new()
     {
+        /// <summary>
+        /// The database
+        /// </summary>
         protected SQLiteAsyncConnection Database;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatabaseAccessLayer{TEntity}"/> class.
+        /// </summary>
+        protected DatabaseAccessLayer()
+        {
+            Database = GetDatabaseConnection();
+        }
+
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
         protected async Task Init()
         {
             if (Database != null)
                 return;
 
-            Database = new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
+            Database = GetDatabaseConnection();
             await Database.CreateTableAsync<TEntity>();
         }
 
@@ -37,6 +51,11 @@ namespace Xpense.Resources.Database
         {
             await Init();
             return await Database.Table<TEntity>().FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        private SQLiteAsyncConnection GetDatabaseConnection()
+        {
+            return new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
         }
     }
 }
